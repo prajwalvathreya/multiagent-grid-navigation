@@ -3,29 +3,14 @@ import torch
 from maze_environment import MazeEnvironment
 from dqn_agent import DQNAgent
 from evaluation import evaluate_agent
+from generate_maze import generate_maze
 
 # Define the maze
-maze = np.array([
-    [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
-    [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
-    [3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 0, 0, 0, 0],
-    [3, 0, 0, 3, 0, 0, 0, 0, 3, 0, 0, 3, 0, 0, 0, 0],
-    [3, 0, 0, 3, 0, 0, 0, 0, 3, 0, 0, 3, 0, 0, 0, 0],
-    [3, 0, 0, 3, 0, 0, 0, 0, 3, 0, 0, 3, 0, 0, 0, 0],
-    [10, 1, 1, 1, 1, 1, 1, 1, 1, 0, 0, 3, 0, 0, 0, 0],
-    [2, 0, 0, 1, 0, 0, 0, 0, 1, 0, 0, 3, 0, 0, 0, 0],
-    [2, 0, 0, 1, 0, 0, 0, 0, 1, 0, 0, 3, 0, 0, 0, 0],
-    [2, 0, 0, 1, 0, 0, 0, 0, 1, 0, 0, 3, 0, 0, 0, 0],
-    [2, 2, 2, 1, 2, 2, 2, 2, 1, 2, 2, 3, 3, 3, 3, 3],
-    [2, 0, 0, 1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 3],
-    [2, 2, 0, 1, 0, 0, 0, 0, 1, 1, 1, 1, 1, 1, 1, 10],
-    [0, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2],
-    [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
-    [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0]
-])
+maze = generate_maze()
 
 # Initialize the environment and the agent
-env = MazeEnvironment(maze=maze, start_positions=[[6, 0], [6, 0]], goal_position=[12, 15])
+env = MazeEnvironment(maze=maze, start_positions=[
+                      [6, 0], [6, 0]], goal_position=[12, 15])
 agent = DQNAgent(state_size=(16, 16), action_size=4, epsilon=1.0, gamma=0.95)
 
 
@@ -40,14 +25,16 @@ eval_interval = 10  # Evaluate every 10 episodes
 for e in range(n_episodes):
     states = env.reset()
     total_reward = 0
-    
+
     for t in range(max_timesteps_per_episode):
-        actions = [agent.act(np.array(state).reshape((16, 16))) for state in states]
+        actions = [agent.act(np.array(state).reshape((16, 16)))
+                   for state in states]
         next_states, rewards = env.step(actions)
         dones = [False] * len(states)  # Modify based on your environment logic
 
         for i, state in enumerate(states):
-            agent.remember(state, actions[i], rewards[i], next_states[i], dones[i])
+            agent.remember(state, actions[i],
+                           rewards[i], next_states[i], dones[i])
             total_reward += rewards[i]
 
         states = next_states
@@ -63,7 +50,8 @@ for e in range(n_episodes):
     print(f"Episode {e+1}/{n_episodes}, Total Reward: {total_reward}")
 
     if (e + 1) % save_interval == 0:
-        torch.save(agent.model.state_dict(), f'model_state_dicts/dqn_model_episode_{e+1}.pth')
+        torch.save(agent.model.state_dict(),
+                   f'model_state_dicts/dqn_model_episode_{e+1}.pth')
 
     if (e + 1) % eval_interval == 0:
         avg_reward = evaluate_agent(env, agent)
