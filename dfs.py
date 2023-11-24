@@ -1,6 +1,19 @@
+from SingleAgent import *
+from generate_maze import *
+from maze_environment import *
+
 # Function to perform DFS and calculate total reward for an episode
 def dfs(agent, env, n_episodes):
     def run_dfs_episode(agent, env):
+        # Define the maze
+        maze, start_row, start_col, end_row, end_col = generate_maze_single_agent()
+
+        # Initialize the environment and the agent
+        # Create a single agent for the maze with the given reward
+        reward = {0: -100, 1: 0, 2: 0, 3: 0, 10: 100}
+        agent = SingleAgent((start_row, start_col), maze, reward)
+        env = MazeEnvironment(maze=maze, start_positions=[
+                            [start_row, start_col]], goal_position=[end_row, end_col])
         total_reward = 0
         visited_states = set()
 
