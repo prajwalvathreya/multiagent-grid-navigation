@@ -32,6 +32,19 @@ class SingleAgent:
             actions.remove("right")
         # Return the remaining actions
         return actions
+    
+    # Define a method to reverse an action
+    def reverse_action(self, action):
+        if action == "up":
+            return "down"
+        elif action == "down":
+            return "up"
+        elif action == "left":
+            return "right"
+        elif action == "right":
+            return "left"
+        else:
+            return action  # Handle unknown action
 
     # Define a method to perform an action and update the agent's position
     def do_action(self, action):
