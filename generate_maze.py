@@ -95,9 +95,35 @@ def generate_maze():
     # # Generate the third route with value 3
     generate_route(start, end, maze, ROUTE_3)
     # Return the maze
-    return maze
+    return maze, start_row, start_col, end_row, end_col
+
+# Define the main function to generate a random maze for a single agent.
+
+
+def generate_maze_single_agent():
+    # Create an empty 16 * 16 array filled with zeros
+    maze = np.zeros((16, 16), dtype=int)
+    # Choose a random start position
+    start_row = random.randint(0, 15)
+    start_col = 0
+    start = (start_row, start_col)
+    # Choose a random end position
+    end_row = random.randint(0, 15)
+    end_col = 15
+    end = (end_row, end_col)
+    # Mark the start and end positions with 10
+    maze[start_row][start_col] = START
+    maze[end_row][end_col] = END
+    # Generate the first route with value 1
+    generate_route(start, end, maze, ROUTE_1)
+    # # Generate the second route with value 2
+    generate_route(start, end, maze, ROUTE_1)
+    # # Generate the third route with value 3
+    generate_route(start, end, maze, ROUTE_1)
+    # Return the maze and the start position
+    return maze, start_row, start_col, end_row, end_col
 
 
 # Generate the maze with routes 1, 2, 3
-# maze = generate_maze()
+# maze = generate_maze_single_agent()
 # print(maze)
