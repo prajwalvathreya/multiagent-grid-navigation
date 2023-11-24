@@ -14,7 +14,7 @@ class DQN(nn.Module):
         self.fc3 = nn.Linear(128, action_size)
 
     def forward(self, x):
-        x = x.view(x.size(0), -1)  # Add this line to flatten the input
+        x = x.view(x.size(0), -1)  #Flatten input
         x = F.relu(self.fc1(x))
         x = F.relu(self.fc2(x))
         return self.fc3(x)

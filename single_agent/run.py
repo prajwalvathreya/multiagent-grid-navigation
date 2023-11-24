@@ -37,7 +37,7 @@ action_size = 4  # Modify according to the number of discrete actions
 agent = DQNAgent(state_size, action_size, device)
 
 # Training loop parameters
-num_episodes = 10
+num_episodes = 1000
 batch_size = 64
 
 max_steps = 100
@@ -75,7 +75,7 @@ for episode in tqdm(range(num_episodes)):
     print(f"Episode {episode + 1}, Total Reward: {total_reward}")
 
     # Save the trained model if needed
-    if (episode + 1) % 100 == 0 or episode == 5:
+    if (episode + 1) % 100 == 0:
         torch.save(agent.q_network.state_dict(), f'model_state_dicts/trained_model_{episode + 1}.pth')
 
 # Save the trained model if needed
