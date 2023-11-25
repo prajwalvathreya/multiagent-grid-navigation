@@ -5,6 +5,7 @@ from SingleAgent import SingleAgent
 from maze_environment import MazeEnvironment
 from generate_maze import generate_maze_single_agent
 from dfs import *
+from value_iteration import *
 
 # Define the maze
 maze, start_row, start_col, end_row, end_col = generate_maze_single_agent()
@@ -22,3 +23,4 @@ time.sleep(10) # Just for testing
 # Set parameters for training
 n_episodes = 1000
 dfs(agent,env,n_episodes)
+value_iteration(env,n_episodes)
