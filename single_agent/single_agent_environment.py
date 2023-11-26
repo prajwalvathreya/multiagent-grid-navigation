@@ -8,24 +8,34 @@ class MazeEnvironment:
         self.start_position = start_position
         self.goal_position = goal_position
         self.position = np.array(start_position)
+        self.done = False
 
     def step(self, action):
         # Define actions as up (0), down (1), left (2), right (3)
         action_map = {0: (-1, 0), 1: (1, 0), 2: (0, -1), 3: (0, 1)}
-        
+        reward = 0
         new_position = self.position + action_map[action]
 
         if (
             0 <= new_position[0] < self.maze.shape[0]
             and 0 <= new_position[1] < self.maze.shape[1]
-            and self.maze[tuple(new_position)] in [1, 2, 3]
+            and self.maze[tuple(new_position)] in [1, 2, 3, 10]
         ):
             self.position = new_position
-
-        reward = -1  # Default negative reward for each step
+            self.done = False
+            if new_position[1] > 10:
+                reward = 10
+            elif new_position[1] > 5:
+                reward = 5
+            else:
+                reward = 0
+        else:
+            reward = -50 # if the agent chooses a location outside the matrix or goes out of bouns or a cell with 0
+            self.done = True
 
         if tuple(self.position) == tuple(self.goal_position):
             reward = 100  # Positive reward for reaching the goal
+            self.done = True
 
         return self.get_agent_state(), reward
 
@@ -36,12 +46,13 @@ class MazeEnvironment:
 
     def reset(self):
         self.position = np.array(self.start_position)
+        self.done = False
         return self.get_agent_state()
 
     def update_position(self, agent_index, action):
-        # Define actions as up (0), down (1), left (2), right (3)
+
         action_map = {0: (-1, 0), 1: (1, 0), 2: (0, -1), 3: (0, 1)}
-        
+
         if isinstance(action, list):
             action = action[0]  # Unwrap action if it's a list
 
@@ -54,8 +65,8 @@ class MazeEnvironment:
         ):
             self.position = new_position
 
-
     def render(self, size=600):
+
         pygame.init()
         width, height = self.maze.shape
         cell_size = size // max(width, height)
@@ -93,3 +104,6 @@ class MazeEnvironment:
 
         pygame.display.flip()
         pygame.time.wait(100)
+
+    def terminated(self):
+        return self.done

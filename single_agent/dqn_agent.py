@@ -21,7 +21,7 @@ class DQN(nn.Module):
 
 
 class DQNAgent:
-    def __init__(self, state_size, action_size, device, learning_rate=0.001, gamma=0.95, epsilon=1.0, epsilon_min=0.01, epsilon_decay=0.995, memory_size=2000):
+    def __init__(self, state_size, action_size, device, learning_rate=1e-4, gamma=0.99, epsilon=1.0, epsilon_min=0.01, epsilon_decay=0.0005, memory_size=2000):
         self.q_network = DQN(state_size, action_size).to(device)
         self.target_network = DQN(state_size, action_size).to(device)
         self.target_network.load_state_dict(self.q_network.state_dict())
@@ -57,6 +57,8 @@ class DQNAgent:
         next_q_values = self.target_network(next_states)
         target_q_values = q_values.clone()
 
+        self.optimizer.zero_grad()
+
         for i in range(len(q_values)):
             if dones[i]:
                 target_q_values[i][actions[i]] = rewards[i]
@@ -64,9 +66,10 @@ class DQNAgent:
                 target_q_values[i][actions[i]] = rewards[i] + self.gamma * torch.max(next_q_values[i])
 
         loss = nn.MSELoss()(q_values, target_q_values)
-        self.optimizer.zero_grad()
         loss.backward()
         self.optimizer.step()
+
+        return loss.item()
 
     def update_target_network(self):
         self.target_network.load_state_dict(self.q_network.state_dict())
@@ -79,6 +82,7 @@ class DQNAgent:
             return
 
         minibatch = random.sample(self.memory, batch_size)
+
         states, actions, rewards, next_states, dones = zip(*minibatch)
 
         states = torch.tensor(states, dtype=torch.float32).to(self.device)
@@ -88,10 +92,12 @@ class DQNAgent:
         dones = torch.tensor(dones, dtype=torch.bool).to(self.device)
 
         experiences = (states, actions, rewards, next_states, dones)
-        self.train(experiences)
+        loss = self.train(experiences)
 
         if self.epsilon > self.epsilon_min:
             self.epsilon *= self.epsilon_decay
+        
+        return loss
 
     def save_model(self, filename):
         torch.save(self.q_network.state_dict(), filename)
