@@ -2,7 +2,7 @@ import numpy as np
 import random
 
 # Define some constants for the maze
-START = 10
+START = 5
 END = 10
 BLOCK = 0
 ROUTE_1 = 1
