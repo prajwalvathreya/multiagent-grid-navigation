@@ -12,6 +12,7 @@ class MazeEnvironment:
 
     def step(self, actions):
         rewards = np.zeros(self.n_agents)
+        next_states = np.zeros((self.n_agents, *self.maze.shape))
 
         for i in range(self.n_agents):
             self.update_position(i, actions[i])
@@ -23,12 +24,13 @@ class MazeEnvironment:
             else:
                 rewards[i] -= 100
 
-        return self.get_agent_state(i), rewards
+            next_states[i] = self.get_agent_state(i)
+
+        return next_states, rewards
 
     def update_position(self, agent_index, action):
         # Define actions as up (0), down (1), left (2), right (3)
-        action_map = {"up": (-1, 0), "down": (1, 0),
-                      "left": (0, -1), "right": (0, 1)}
+        action_map = {0: (-1, 0), 1: (1, 0), 2: (0, -1), 3: (0, 1)}
         new_position = self.positions[agent_index] + action_map[action]
 
         if 0 <= new_position[0] < self.maze.shape[0] and \
@@ -42,17 +44,16 @@ class MazeEnvironment:
                 return True
         return False
 
-    def is_goal_reached(self):
-        return all(tuple(self.positions[i]) == tuple(self.goal_position) for i in range(self.n_agents))
-
     def is_at_allowed_shared_cell(self, agent_index):
         return all(self.positions[agent_index] == self.start_positions[agent_index]) or \
             all(self.positions[agent_index] == self.goal_position)
 
-    # In the MazeEnvironment class
     def get_agent_state(self, agent_index):
-        # Return only the agent's position
-        return self.positions[agent_index]
+        state = np.copy(self.maze)
+        for i, position in enumerate(self.positions):
+            if i != agent_index:
+                state[tuple(position)] = -1  # Mark other agents' positions
+        return state
 
     def reset(self):
         self.positions = np.array(self.start_positions)

@@ -11,9 +11,9 @@ def evaluate_agent(agent, maze_env, num_episodes):
 
         while not done:
             action = agent.choose_action(state)
-            next_state, reward, done = maze_env.step(action)
-            total_reward += reward
-            state = next_state
+            next_states, rewards = maze_env.step([action])  # Wrap action in a list or np.array
+            total_reward += rewards
+            state = next_states[0] if isinstance(next_states, list) else next_states
 
         total_rewards.append(total_reward)
 
