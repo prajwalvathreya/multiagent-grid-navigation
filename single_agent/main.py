@@ -1,5 +1,5 @@
 import numpy as np
-from dqn_agent import DQNAgent
+from dqnagent import DQNAgent
 from single_agent_environment import MazeEnvironment
 import torch
 from tqdm import tqdm
