@@ -7,7 +7,9 @@ import matplotlib.pyplot as plt
 from mazegenerator import *
 
 environments = []
+ 
 
+ 
 print("Generating environments for training...")
 for i in tqdm(range(1000)):
     # Create the maze environment

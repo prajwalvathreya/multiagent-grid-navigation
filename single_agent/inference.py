@@ -1,6 +1,6 @@
 import numpy as np
 from single_agent_environment import MazeEnvironment  # Import your MazeEnvironment class
-from dqn_agent import DQNAgent  # Import your DQNAgent class
+from dqnagent import DQNAgent  # Import your DQNAgent class
 import torch
 
 def inference(model_path, maze, start_position, goal_position):
