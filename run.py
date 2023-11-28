@@ -6,13 +6,12 @@ from evaluation import evaluate_agent
 from generate_maze import generate_maze
 
 # Define the maze
-maze = generate_maze()
+maze, start_row, start_col, end_row, end_col = generate_maze()
 
 # Initialize the environment and the agent
 env = MazeEnvironment(maze=maze, start_positions=[
-                      [6, 0], [6, 0]], goal_position=[12, 15])
+                      [start_row, start_col], [start_row, start_col]], goal_position=[end_row, end_col])
 agent = DQNAgent(state_size=(16, 16), action_size=4, epsilon=1.0, gamma=0.95)
-
 
 # Set parameters for training
 n_episodes = 1000

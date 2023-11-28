@@ -2,6 +2,7 @@ import numpy as np
 import pygame
 
 class MazeEnvironment:
+
     def __init__(self, maze, start_positions, goal_position):
         self.maze = maze
         self.start_positions = start_positions
@@ -14,12 +15,15 @@ class MazeEnvironment:
         next_states = np.zeros((self.n_agents, *self.maze.shape))
 
         for i in range(self.n_agents):
+
             self.update_position(i, actions[i])
 
             if self.is_collision(i) and not self.is_at_allowed_shared_cell(i):
                 rewards[i] -= 100
             elif self.maze[tuple(self.positions[i])] in [1, 2, 3]:
                 rewards[i] += 1
+            elif self.maze[tuple(self.positions[i])] in [10]:
+                rewards[i] += 100
             else:
                 rewards[i] -= 100
 
@@ -30,11 +34,15 @@ class MazeEnvironment:
     def update_position(self, agent_index, action):
         # Define actions as up (0), down (1), left (2), right (3)
         action_map = {0: (-1, 0), 1: (1, 0), 2: (0, -1), 3: (0, 1)}
+        
+        if isinstance(action, list):
+            action = action[0]  # Unwrap action if it's a list
+
         new_position = self.positions[agent_index] + action_map[action]
 
         if 0 <= new_position[0] < self.maze.shape[0] and \
-           0 <= new_position[1] < self.maze.shape[1] and \
-           self.maze[tuple(new_position)] in [1, 2, 3, 10]:  # Include 10 for valid moves
+        0 <= new_position[1] < self.maze.shape[1] and \
+        self.maze[tuple(new_position)] in [1, 2, 3, 10]:  # Include 10 for valid moves
             self.positions[agent_index] = new_position
 
     def is_collision(self, agent_index):
@@ -48,7 +56,7 @@ class MazeEnvironment:
                all(self.positions[agent_index] == self.goal_position)
 
     def get_agent_state(self, agent_index):
-        state = np.copy(self.maze)
+        state = np.zeros_like(self.maze)
         for i, position in enumerate(self.positions):
             if i != agent_index:
                 state[tuple(position)] = -1  # Mark other agents' positions
@@ -79,7 +87,7 @@ class MazeEnvironment:
                     pygame.draw.rect(screen, (0, 0, 0), rect)
                 elif cell_value in [1, 2, 3]:  # Paths
                     pygame.draw.rect(screen, colors[cell_value], rect)
-                elif cell_value == 10:
+                elif cell_value == 10 or cell_value == 5:
                     pygame.draw.rect(screen, (255, 255, 255), rect)
 
         for position in self.positions:
