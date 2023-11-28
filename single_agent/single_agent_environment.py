@@ -3,12 +3,13 @@ import pygame
 
 class MazeEnvironment:
 
-    def __init__(self, maze, start_position, goal_position):
+    def __init__(self, maze, start_position, goal_position, number):
         self.maze = maze
         self.start_position = start_position
         self.goal_position = goal_position
         self.position = np.array(start_position)
         self.done = False
+        self.number = number
 
     def step(self, action):
         # Define actions as up (0), down (1), left (2), right (3)
@@ -104,6 +105,45 @@ class MazeEnvironment:
 
         pygame.display.flip()
         pygame.time.wait(100)
+
+    def save_environment(self, size = 600):
+        
+        pygame.init()
+        width, height = self.maze.shape
+        cell_size = size // max(width, height)
+        screen = pygame.Surface((width * cell_size, height * cell_size))
+        
+
+        # Define colors
+        colors = {1: (255, 0, 0),  # Red for path '1'
+                2: (0, 255, 0),  # Green for path '2'
+                3: (0, 0, 255)}  # Blue for path '3'
+
+        for row in range(height):
+            for col in range(width):
+                rect = pygame.Rect(col * cell_size, row * cell_size, cell_size, cell_size)
+                cell_value = self.maze[row, col]
+                if cell_value == 0:  # Wall
+                    pygame.draw.rect(screen, (0, 0, 0), rect)
+                elif cell_value in [1, 2, 3]:  # Paths
+                    pygame.draw.rect(screen, colors[cell_value], rect)
+                elif cell_value == 10 or cell_value == 5:
+                    pygame.draw.rect(screen, (255, 255, 255), rect)
+
+        # center_x = self.position[1] * cell_size + cell_size // 2
+        # center_y = self.position[0] * cell_size + cell_size // 2
+        # radius = cell_size // 4  # Radius of the circle in which the triangle is inscribed
+
+        # # Define vertices of the triangle
+        # vertices = [
+        #     (center_x, center_y - radius),  # Top vertex
+        #     (center_x - radius * np.sin(np.radians(60)), center_y + radius * np.cos(np.radians(60))),  # Bottom left vertex
+        #     (center_x + radius * np.sin(np.radians(60)), center_y + radius * np.cos(np.radians(60)))   # Bottom right vertex
+        # ]
+
+        # pygame.draw.polygon(screen, (255, 255, 255), vertices)
+        pygame.image.save(screen, f"environments/environment_image_{self.number}.png")
+
 
     def terminated(self):
         return self.done

@@ -4,6 +4,7 @@ import torch.optim as optim
 import torch.nn.functional as F
 import random
 from collections import deque
+import numpy as np
 
 class DQN(nn.Module):
     def __init__(self, state_size, action_size):
@@ -84,7 +85,10 @@ class DQNAgent:
         minibatch = random.sample(self.memory, batch_size)
 
         states, actions, rewards, next_states, dones = zip(*minibatch)
-
+        
+        states = np.array(states)
+        next_states = np.array(next_states)
+        
         states = torch.tensor(states, dtype=torch.float32).to(self.device)
         actions = torch.tensor(actions, dtype=torch.long).to(self.device)
         rewards = torch.tensor(rewards, dtype=torch.float32).to(self.device)

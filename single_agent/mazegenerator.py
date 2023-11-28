@@ -122,8 +122,3 @@ def generate_maze_single_agent():
     generate_route(start, end, maze, ROUTE_1)
     # Return the maze and the start position
     return maze, start_row, start_col, end_row, end_col
-
-
-# Generate the maze with routes 1, 2, 3
-# maze = generate_maze_single_agent()
-# print(maze)
