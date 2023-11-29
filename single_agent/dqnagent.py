@@ -102,6 +102,17 @@ class DQNAgent:
             self.epsilon *= self.epsilon_decay
         
         return loss
+    
+    def reset_weights(self):
+        # Reset the weights of the Q-network
+        self.q_network.apply(self.initialize_weights)
+        self.target_network.load_state_dict(self.q_network.state_dict())
+        self.optimizer = optim.Adam(self.q_network.parameters(), lr=self.learning_rate)
+    
+    def initialize_weights(self, layer):
+        if isinstance(layer, nn.Linear):
+            nn.init.xavier_uniform_(layer.weight, gain=nn.init.calculate_gain('relu'))
+            nn.init.constant_(layer.bias, 0)
 
     def save_model(self, filename):
         torch.save(self.q_network.state_dict(), filename)

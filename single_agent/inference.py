@@ -2,15 +2,16 @@ import numpy as np
 from single_agent_environment import MazeEnvironment  # Import your MazeEnvironment class
 from dqnagent import DQNAgent  # Import your DQNAgent class
 import torch
+from mazegenerator import *
 
 def inference(model_path, maze, start_position, goal_position):
     # Create the maze environment
-    env = MazeEnvironment(maze, start_position, goal_position)
+    env = MazeEnvironment(maze, start_position, goal_position, 0)
 
     # Define DQN parameters
-    state_size = 16 * 16  # Modify according to your state representation
-    action_size = 4  # Modify according to the number of discrete actions
-    device = "cpu" if torch.backends.mps.is_available else "cpu"
+    state_size = 16 * 16  
+    action_size = 4 
+    device = "cpu"
 
     # Initialize the DQNAgent
     agent = DQNAgent(state_size, action_size, device)
@@ -44,15 +45,35 @@ def inference(model_path, maze, start_position, goal_position):
 
 if __name__ == "__main__":
     # Path to the trained model
-    model_path = 'trained_model.pth'  # Update with the correct path
+    model_path = r'trained_model.pth'  # Update with the correct path
 
     # Define your maze, start position, and goal position
+    # maze, s_row, s_col, g_row, g_col = generate_maze()
+    
+    # start_position = (s_row, s_col)
+    # goal_position = (g_row, g_col)
+    # Create the maze environment
     maze = np.array([
-        # ... (your maze definition)
+        [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+        [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+        [3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 0, 0, 0, 0],
+        [3, 0, 0, 3, 0, 0, 0, 0, 3, 0, 0, 3, 0, 0, 0, 0],
+        [3, 0, 0, 3, 0, 0, 0, 0, 3, 0, 0, 3, 0, 0, 0, 0],
+        [3, 0, 0, 3, 0, 0, 0, 0, 3, 0, 0, 3, 0, 0, 0, 0],
+        [5, 1, 1, 1, 1, 1, 1, 1, 1, 0, 0, 3, 0, 0, 0, 0],
+        [2, 0, 0, 1, 0, 0, 0, 0, 1, 0, 0, 3, 0, 0, 0, 0],
+        [2, 0, 0, 1, 0, 0, 0, 0, 1, 0, 0, 3, 0, 0, 0, 0],
+        [2, 0, 0, 1, 0, 0, 0, 0, 1, 0, 0, 3, 0, 0, 0, 0],
+        [2, 2, 2, 1, 2, 2, 2, 2, 1, 2, 2, 3, 3, 3, 3, 3],
+        [2, 0, 0, 1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 3],
+        [2, 2, 0, 1, 0, 0, 0, 0, 1, 1, 1, 1, 1, 1, 1, 10],
+        [0, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2],
+        [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+        [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0]
     ])
 
-    start_position = (6, 0)  # Update with the correct start position
-    goal_position = (12, 15)  # Update with the correct goal position
-
+    start_position = (6,0)
+    goal_position = (12, 15)
+    
     # Perform inference
     inference(model_path, maze, start_position, goal_position)

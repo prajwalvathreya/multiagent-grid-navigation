@@ -24,18 +24,22 @@ class MazeEnvironment:
         ):
             self.position = new_position
             self.done = False
-            if new_position[1] > 10:
-                reward = 10
-            elif new_position[1] > 5:
-                reward = 5
-            else:
-                reward = 0
+            reward = 0
+        elif (
+            0 <= new_position[0] < self.maze.shape[0]
+            and 0 <= new_position[1] < self.maze.shape[1]
+            and self.maze[tuple(new_position)] in [5]
+        ):
+            self.position = new_position
+            self.done = False
+            reward = -200 # if agent goes back to start position
         else:
-            reward = -50 # if the agent chooses a location outside the matrix or goes out of bouns or a cell with 0
+            reward = -200 # if the agent chooses a location outside the matrix or goes out of bouns or a cell with 0
             self.done = True
 
         if tuple(self.position) == tuple(self.goal_position):
-            reward = 100  # Positive reward for reaching the goal
+            print("Goal Reached")
+            reward = 3000  # Positive reward for reaching the goal
             self.done = True
 
         return self.get_agent_state(), reward
@@ -101,7 +105,7 @@ class MazeEnvironment:
             (center_x + radius * np.sin(np.radians(60)), center_y + radius * np.cos(np.radians(60)))   # Bottom right vertex
         ]
 
-        pygame.draw.polygon(screen, (255, 255, 255), vertices)
+        pygame.draw.polygon(screen, (0, 0, 0), vertices)
 
         pygame.display.flip()
         pygame.time.wait(100)
@@ -130,18 +134,6 @@ class MazeEnvironment:
                 elif cell_value == 10 or cell_value == 5:
                     pygame.draw.rect(screen, (255, 255, 255), rect)
 
-        # center_x = self.position[1] * cell_size + cell_size // 2
-        # center_y = self.position[0] * cell_size + cell_size // 2
-        # radius = cell_size // 4  # Radius of the circle in which the triangle is inscribed
-
-        # # Define vertices of the triangle
-        # vertices = [
-        #     (center_x, center_y - radius),  # Top vertex
-        #     (center_x - radius * np.sin(np.radians(60)), center_y + radius * np.cos(np.radians(60))),  # Bottom left vertex
-        #     (center_x + radius * np.sin(np.radians(60)), center_y + radius * np.cos(np.radians(60)))   # Bottom right vertex
-        # ]
-
-        # pygame.draw.polygon(screen, (255, 255, 255), vertices)
         pygame.image.save(screen, f"environments/environment_image_{self.number}.png")
 
 
