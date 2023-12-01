@@ -1,7 +1,6 @@
 import numpy as np
 import pygame
 
-
 class MazeEnvironment:
     def __init__(self, maze, start_positions, goal_position):
         self.maze = maze
@@ -9,24 +8,45 @@ class MazeEnvironment:
         self.goal_position = goal_position
         self.n_agents = len(start_positions)
         self.positions = np.array(start_positions)
+        self.done = False
 
     def step(self, actions):
+
         rewards = np.zeros(self.n_agents)
         next_states = np.zeros((self.n_agents, *self.maze.shape))
+        self.done = False
 
         for i in range(self.n_agents):
+            current_position = self.positions[i]
             self.update_position(i, actions[i])
+            new_position = self.positions[i]
 
-            if self.is_collision(i) and not self.is_at_allowed_shared_cell(i):
+            if self.is_out_of_bounds(new_position):
+                rewards[i] -= 100  # Penalize for going out of bounds
+                self.positions[i] = current_position
+                self.done = True
+
+            elif self.is_collision(i) and not self.is_at_allowed_shared_cell(i):
                 rewards[i] -= 100
-            elif self.maze[tuple(self.positions[i])] in [1, 2, 3]:
-                rewards[i] += 1
+                self.done = True
+                
+            elif self.maze[tuple(new_position)] in [1, 2, 3]:
+                # Reward for visiting a new cell
+                rewards[i] += 1 if any(new_position != current_position) else 0
+                self.done = False
+
+            elif self.maze[tuple(new_position)] in [10]:
+                # Reward for visiting a new cell
+                rewards[i] += 1000 if any(new_position != current_position) else 0
+                self.done = True
+
             else:
                 rewards[i] -= 100
+                self.done = True
 
             next_states[i] = self.get_agent_state(i)
 
-        return next_states, rewards
+        return next_states, rewards, self.done
 
     def update_position(self, agent_index, action):
         # Define actions as up (0), down (1), left (2), right (3)
@@ -58,6 +78,12 @@ class MazeEnvironment:
     def reset(self):
         self.positions = np.array(self.start_positions)
         return [self.get_agent_state(i) for i in range(self.n_agents)]
+    
+    def is_out_of_bounds(self, position):
+        return (
+            position[0] < 0 or position[0] >= self.maze.shape[0] or
+            position[1] < 0 or position[1] >= self.maze.shape[1]
+        )
 
     def render(self, size=600):
 
