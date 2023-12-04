@@ -111,7 +111,7 @@ for i in tqdm(range(len(environments))):
             total_reward += reward
 
             done = env.terminated()
-            # env.render()
+            env.render()
 
         agent.update_target_network()
 
@@ -121,7 +121,7 @@ for i in tqdm(range(len(environments))):
         loss_every_episode.append(total_loss)
         reward_every_episode.append(total_reward)
 
-        # Save the trained model if needed
+        # # Save the trained model if needed
         if (episode + 1) % 500 == 0:
             torch.save(agent.q_network.state_dict(), f'model_state_dicts/{env_count}_model_{episode + 1}.pth')
 
