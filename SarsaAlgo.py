@@ -1,6 +1,6 @@
 # SARSA algorithm
 import numpy as np
-from SarsaAgent import SarsaAgent
+from SarsaAgent import SarsaAgent  # Assuming SarsaAgent is a defined class
 
 
 def sarsa(agent, env, n_episodes, epsilon=0.1, alpha=0.1, gamma=0.9):
@@ -34,7 +34,7 @@ def sarsa(agent, env, n_episodes, epsilon=0.1, alpha=0.1, gamma=0.9):
 
         total_rewards.append(episode_reward)
 
-    return total_rewards  # Correct the indentation here
+    return total_rewards
 
 # Epsilon-greedy policy
 

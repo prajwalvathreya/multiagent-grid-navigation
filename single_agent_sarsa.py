@@ -3,10 +3,10 @@ import gym
 import matplotlib.pyplot as plt
 
 # SARSA parameters
-lr = 0.1
-gamma = 0.99
-epsilon = 0.1
-num_episodes = 10000
+lr = 0.1          # Learning rate
+gamma = 0.99       # Discount factor
+epsilon = 0.1      # Epsilon-greedy exploration rate
+num_episodes = 10000  # Number of episodes
 
 # Create the FrozenLake environment
 env = gym.make('FrozenLake8x8-v1')
@@ -22,6 +22,8 @@ success_rate = []
 # SARSA algorithm
 for episode in range(num_episodes):
     state, info = env.reset()
+
+    # Select initial action using epsilon-greedy strategy
     action = env.action_space.sample() if np.random.rand(
     ) < epsilon else np.argmax(Q[state])
 
@@ -30,7 +32,10 @@ for episode in range(num_episodes):
     episode_steps = 0
 
     while not done:
+        # Take the selected action
         next_state, reward, done, _, info = env.step(action)
+
+        # Select next action using epsilon-greedy strategy
         next_action = env.action_space.sample() if np.random.rand(
         ) < epsilon else np.argmax(Q[next_state])
 
@@ -38,11 +43,13 @@ for episode in range(num_episodes):
         Q[state, action] = Q[state, action] + lr * \
             (reward + gamma * Q[next_state, next_action] - Q[state, action])
 
+        # Move to the next state and action
         state = next_state
         action = next_action
         episode_reward += reward
         episode_steps += 1
 
+    # Store episode metrics
     total_rewards.append(episode_reward)
     total_steps.append(episode_steps)
     success_rate.append(int(episode_reward > 0))

@@ -31,25 +31,26 @@ example_maze = np.array([
     [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0]
 ])
 
-example_start_position = (6,0)
+example_start_position = (6, 0)
 example_goal_position = (12, 15)
 
-env1 = MazeEnvironment(example_maze, example_start_position, example_goal_position, 0)
+# Create an example environment
+env1 = MazeEnvironment(
+    example_maze, example_start_position, example_goal_position, 0)
 environments.append(env1)
 start_positions.append(example_start_position)
 
 print("Generating environments for training...")
 for i in tqdm(range(1, 250)):
-    # Create the maze environment
+    # Generate random maze and start/goal positions
     maze, s_row, s_col, g_row, g_col = generate_maze()
-    
     start_position = (s_row, s_col)
     goal_position = (g_row, g_col)
 
-    #generate new environment
+    # Create a new environment
     env = MazeEnvironment(maze, start_position, goal_position, i)
 
-    #store environments to train on
+    # Store environments to train on
     environments.append(env)
     start_positions.append(start_position)
     env.save_environment()
@@ -62,7 +63,10 @@ state_size = 16 * 16  # Modify according to your state representation
 action_size = 4  # Modify according to the number of discrete actions
 agent = DQNAgent(state_size, action_size, device)
 
+# Mapping for actions
 action_map = {0: "up", 1: "down", 2: "left", 3: "right"}
+
+# Dictionaries to store losses and rewards for all environments
 loss_for_all_environments = {}
 rewards_for_all_environments = {}
 env_count = 1
@@ -70,7 +74,6 @@ env_count = 1
 print("Training on environments..")
 
 for i in tqdm(range(len(environments))):
-
     num_episodes = 1000
     batch_size = 32
     loss_every_episode = []
@@ -99,12 +102,13 @@ for i in tqdm(range(len(environments))):
             else:
                 reward = 10
 
-            visited_positions.add(tuple(env.position))  # Add the current position to the set
+            # Add the current position to the set
+            visited_positions.add(tuple(env.position))
 
             agent.remember(state, action, reward, next_state, done)
             loss = agent.replay(batch_size)
 
-            if loss != None:
+            if loss is not None:
                 total_loss += loss
 
             state = next_state
@@ -121,20 +125,22 @@ for i in tqdm(range(len(environments))):
         loss_every_episode.append(total_loss)
         reward_every_episode.append(total_reward)
 
-        # # Save the trained model if needed
+        # Save the trained model periodically
         if (episode + 1) % 500 == 0:
-            torch.save(agent.q_network.state_dict(), f'model_state_dicts/{env_count}_model_{episode + 1}.pth')
+            torch.save(agent.q_network.state_dict(),
+                       f'model_state_dicts/{env_count}_model_{episode + 1}.pth')
 
     loss_for_all_environments[env_count] = loss_every_episode
     rewards_for_all_environments[env_count] = reward_every_episode
 
     env_count += 1
 
+# Save the losses and rewards to JSON files
 with open("rewards.json", 'w') as json_file:
     json.dump(rewards_for_all_environments, json_file, indent=2)
 
 with open("loss.json", 'w') as json_file:
     json.dump(loss_for_all_environments, json_file, indent=2)
 
-# # Save the trained model if needed
+# Save the final trained model
 torch.save(agent.q_network.state_dict(), 'trained_model.pth')

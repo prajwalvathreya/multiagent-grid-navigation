@@ -3,10 +3,10 @@ import gym
 import matplotlib.pyplot as plt
 
 # Q-learning parameters
-lr = 0.1
-gamma = 0.99
-epsilon = 0.1
-num_episodes = 10000
+lr = 0.1          # Learning rate
+gamma = 0.99       # Discount factor
+epsilon = 0.1      # Epsilon-greedy exploration rate
+num_episodes = 10000  # Number of episodes
 
 # Create the FrozenLake environment
 env = gym.make('FrozenLake8x8-v1')
@@ -43,6 +43,7 @@ for episode in range(num_episodes):
         episode_reward += reward
         episode_steps += 1
 
+    # Store episode metrics
     total_rewards.append(episode_reward)
     total_steps.append(episode_steps)
     success_rate.append(int(episode_reward > 0))

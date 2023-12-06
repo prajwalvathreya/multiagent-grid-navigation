@@ -1,8 +1,10 @@
 import numpy as np
 import pygame
 
+
 class MazeEnvironment:
     def __init__(self, maze, start_positions, goal_position):
+        # Initialize the MazeEnvironment with maze layout, start positions, and goal position
         self.maze = maze
         self.start_positions = start_positions
         self.goal_position = goal_position
@@ -11,7 +13,7 @@ class MazeEnvironment:
         self.done = False
 
     def step(self, actions):
-
+        # Take a step in the environment based on the given actions for each agent
         rewards = np.zeros(self.n_agents)
         next_states = np.zeros((self.n_agents, *self.maze.shape))
         self.done = False
@@ -29,7 +31,7 @@ class MazeEnvironment:
             elif self.is_collision(i) and not self.is_at_allowed_shared_cell(i):
                 rewards[i] -= 100
                 self.done = True
-                
+
             elif self.maze[tuple(new_position)] in [1, 2, 3]:
                 # Reward for visiting a new cell
                 rewards[i] += 1 if any(new_position != current_position) else 0
@@ -37,7 +39,8 @@ class MazeEnvironment:
 
             elif self.maze[tuple(new_position)] in [10]:
                 # Reward for visiting a new cell
-                rewards[i] += 1000 if any(new_position != current_position) else 0
+                rewards[i] += 1000 if any(new_position !=
+                                          current_position) else 0
                 self.done = True
 
             else:
@@ -49,7 +52,7 @@ class MazeEnvironment:
         return next_states, rewards, self.done
 
     def update_position(self, agent_index, action):
-        # Define actions as up (0), down (1), left (2), right (3)
+        # Update the position of an agent based on the chosen action
         action_map = {0: (-1, 0), 1: (1, 0), 2: (0, -1), 3: (0, 1)}
         new_position = self.positions[agent_index] + action_map[action]
 
@@ -59,16 +62,19 @@ class MazeEnvironment:
             self.positions[agent_index] = new_position
 
     def is_collision(self, agent_index):
+        # Check if an agent collides with another agent
         for i in range(self.n_agents):
             if i != agent_index and all(self.positions[i] == self.positions[agent_index]):
                 return True
         return False
 
     def is_at_allowed_shared_cell(self, agent_index):
+        # Check if an agent is at an allowed shared cell (start or goal position)
         return all(self.positions[agent_index] == self.start_positions[agent_index]) or \
             all(self.positions[agent_index] == self.goal_position)
 
     def get_agent_state(self, agent_index):
+        # Get the state representation for a specific agent
         state = np.copy(self.maze)
         for i, position in enumerate(self.positions):
             if i != agent_index:
@@ -76,17 +82,19 @@ class MazeEnvironment:
         return state
 
     def reset(self):
+        # Reset the environment to the initial state
         self.positions = np.array(self.start_positions)
         return [self.get_agent_state(i) for i in range(self.n_agents)]
-    
+
     def is_out_of_bounds(self, position):
+        # Check if a given position is out of the maze bounds
         return (
             position[0] < 0 or position[0] >= self.maze.shape[0] or
             position[1] < 0 or position[1] >= self.maze.shape[1]
         )
 
     def render(self, size=600):
-
+        # Render the maze and agent positions using Pygame
         pygame.init()
         width, height = self.maze.shape
         cell_size = size // max(width, height)
