@@ -32,7 +32,7 @@ class SingleAgent:
             actions.remove("right")
         # Return the remaining actions
         return actions
-    
+
     # Define a method to reverse an action
     def reverse_action(self, action):
         if action == "up":

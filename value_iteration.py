@@ -5,7 +5,9 @@ from SingleAgent import SingleAgent
 from maze_environment import MazeEnvironment
 from generate_maze import generate_maze_single_agent
 
+
 def value_iteration(env, n_episodes):
+    # Value Iteration algorithm to estimate state values and find an optimal policy
     gamma = 0.9  # Discount factor
     state_values = np.zeros_like(env.maze, dtype=float)
 
@@ -33,7 +35,8 @@ def value_iteration(env, n_episodes):
                             values.append(state_values[next_row, next_col])
 
                     if values:
-                        state_values_new[row, col] = env.maze[row, col] + gamma * max(values)
+                        state_values_new[row, col] = env.maze[row,
+                                                              col] + gamma * max(values)
 
         # Check for convergence (change in state values is very small)
         if np.max(np.abs(state_values_new - state_values)) < 1e-4:
@@ -44,11 +47,14 @@ def value_iteration(env, n_episodes):
     # Now, state_values contain the estimated values for each state
     # You can use these values to determine the policy and execute actions in the environment
 
-        # Print the rewards earned in each episode
+    # Print the rewards earned in each episode
+    for episode in range(n_episodes):
         total_rewards = 0
         state = env.reset()
         for step in range(100):  # Assuming a maximum of 100 steps per episode
-            action = np.argmax([state_values[row, col] for row, col in zip(*np.where(state[0] == 10))])
+            # Choose the action based on the estimated state values
+            action = np.argmax([state_values[row, col]
+                               for row, col in zip(*np.where(state[0] == 10))])
             next_state, reward = env.step([action])
             total_rewards += reward[0]
             state = next_state
