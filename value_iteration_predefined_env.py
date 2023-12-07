@@ -33,40 +33,30 @@ def value_iteration(env, gamma=0.9, epsilon=1e-6):
 
     return V, rewards_list
 
-def plot_policy(env, policy):
-    grid = np.zeros(env.desc.shape, dtype=int)
-    for s in range(len(policy)):
-        row, col = env.decode(s)
-        grid[row, col] = policy[s]
-
-    cmap = ListedColormap(['white', 'black', 'blue', 'green'])
-    plt.imshow(grid, cmap=cmap, interpolation='none')
-    plt.show()
-
 if __name__ == "__main__":
     # Assuming you have the OpenAI Gym library installed
     import gym
 
     # Create FrozenLake environment
-    env = gym.make('FrozenLake-v1')
+    env = gym.make('FrozenLake8x8-v1')
 
     # Run value iteration
     optimal_values, rewards_list = value_iteration(env)
-
+    print(rewards_list)
     # Plot the optimal values
     plt.plot(optimal_values)
     plt.xlabel('State')
     plt.ylabel('Optimal Value')
-    plt.title('Value Iteration for Frozen Lake')
+    plt.title('Value Iteration Performance')
     plt.show()
 
     # Plot the rewards over iterations
     plt.plot(rewards_list)
     plt.xlabel('Iteration')
     plt.ylabel('Total Reward')
-    plt.title('Rewards during Value Iteration for Frozen Lake')
+    plt.title('Rewards during Value Iteration')
     plt.show()
 
     # Find and plot the optimal policy
     optimal_policy = [np.argmax([sum([p * (r + 0.9 * optimal_values[s_]) for p, s_, r, _ in env.P[s][a]]) for a in range(env.action_space.n)]) for s in range(env.observation_space.n)]
-    plot_policy(env, optimal_policy)
+    print(optimal_policy)
