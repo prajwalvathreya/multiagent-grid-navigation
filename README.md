@@ -17,6 +17,13 @@ Contains the main training loop where multiple agents are trained in the maze en
 ### `evaluation.py`
 Provides functionality to evaluate the performance of the agents. It runs the agents through a series of episodes in the maze environment and calculates their average reward as a measure of performance.
 
+### `value_iteration_perf.py`
+Provides the optimal policy graph and convergence of the value iteration for a pre-defined environment (8x8 grid).
+
+### `value_iteration_predefined_env.py`
+Provides the Vopt values of each state in a 8x8 grid where it provides information on how the Vopt value changes as we get closer to the goal state. It also provides an insight on 
+how the rewards are calculated for a given number of iterations using value iteration. 
+
 ## Requirements
 To run the project, ensure the following libraries are installed:
 - numpy
@@ -27,3 +34,5 @@ You can install these using the `requirements.txt` file with the command `pip in
 
 ## Running the Project
 Execute `run.py` to start the training process. The training progress can be observed through the console output and the Pygame window visualizing the agents' movements in the maze.
+
+Execute `value_iteration_perf.py` and `value_iteration_predefined_env.py` to view the performance of value iteration for a pre-defined environment. 
